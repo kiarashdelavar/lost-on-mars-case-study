@@ -1,0 +1,37 @@
+@startuml
+title Mars Rover Navigation Architecture
+
+skinparam componentStyle rectangle
+
+component "LiDAR" as Lidar
+component "Stereo Camera" as Camera
+component "IMU" as IMU
+component "Wheel Encoders" as Encoders
+
+component "Sensor Preprocessing" as Preprocess
+component "EKF Sensor Fusion" as EKF
+component "SLAM" as SLAM
+component "Occupancy Grid Map\n+ Elevation Map" as Map
+component "A* Path Planner" as Planner
+component "Rover Controller" as Controller
+component "Health Monitor\n+ Failure Detection" as Monitor
+
+Lidar --> Preprocess
+Camera --> Preprocess
+IMU --> Preprocess
+Encoders --> Preprocess
+
+Preprocess --> EKF
+EKF --> SLAM
+
+SLAM --> Map
+Map --> SLAM : map feedback
+
+Map --> Planner
+Planner --> Controller
+
+Monitor --> EKF : sensor confidence
+Monitor --> SLAM : drift check
+Monitor --> Controller : safe mode
+
+@enduml
